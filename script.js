@@ -47,7 +47,7 @@ function insertText(container, text) {
     container.appendChild(node);
 }
 
-function insertLink(container, url title) {
+function insertLink(container, url, title) {
     var link = document.createElement('a');
     link.setAttribute('href', url);
     insertText(link, title);
@@ -68,21 +68,25 @@ function addStyleLink(href) {
     head.appendChild(link);
 }
 
-function addResult(s) {
+function makeResultItem() {
     makeWindow();
     // TODO this is all very provisional
     var div = document.createElement('div');    
     div.setAttribute('class','entry');
-    insertText(div,s);
     pane.appendChild(div);
+    return div;
 }
 
-function showResults(x) {
-    addResult("SFPL has " + x);
-}
 
 function showNegResults(x) {
-    addResult("SFPL doesn't have " + x);
+    insertText(makeResultItem(), "SFPL doesn't have " + x);
+}
+
+
+function showResults(x) {
+    var r = makeResultItem();
+    // conceivable this would be a different URL, but most times the query url will also be display url
+    insertLink(r, makeQueryUrl(x), "SFPL has " + x);
 }
 
 
