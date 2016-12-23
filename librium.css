@@ -1,0 +1,92 @@
+.librium {  
+    position: fixed;
+    margin:15px;
+    width: 300px;
+    right: 0px; 
+    bottom: 0px; 
+    z-index:1999; 
+    font: normal normal normal 10pt Calibri; 
+    color: #F1F5A0;
+}
+
+.libriumopener {
+    display:inline; 
+    position: absolute; 
+    right: 6px;  
+    bottom: 6px;
+    cursor: pointer; 
+    width: 15px;
+    height: 15px;
+    vertical-align: middle;
+}
+
+.libriumopener img  {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.libriumfooter {
+    font-size: 9pt; 
+    text-align: center; 
+    border-top: 1px solid gray;
+    padding-top: 3px;
+    margin-bottom: 1pt;
+    min-height: 24px;		/* too big but makes room for seomoz img */
+    vertical-align: middle; 	/* for inheriting */
+}
+
+.libriummore {
+    float: left;
+    margin-left: 8px;
+}
+
+.libriumseo {
+    float: right;
+    margin-right: 22px;
+}
+
+.libriuminner {
+    border: 1px solid #AEAEF8;  
+    box-shadow: 4px 4px 2px #888;
+    text-align: left; 
+    opacity:0.85; 
+    border-radius: 6px;
+    background: #161652;
+    min-height:17px;		/*cuts down flash */
+}
+
+.libriuminner ul {
+    list-style-type: disc; 
+    margin: 0px;		/* shouldn't be necessary but sometimes reset.css doesn't take? */
+    padding: 5px;
+    line-height: normal;
+}
+
+.libriuminner li { 
+    margin-top: 1px; 
+    margin-bottom: 1px; 
+    margin-left: 1px; 
+    color: gray; 
+}
+
+.libriuminner a {
+    font: normal normal normal 10pt Calibri; 
+    text-decoration: none;
+    background: inherit;	/* now i am a css ninja (god help me) */
+}
+
+.libriuminner a:link {
+    color: #F1F5A0;
+}
+
+.libriuminner a:visited {
+    color: #EEE474;
+}
+
+.libriuminner a:hover {
+    background: #EEEEEE;
+    color: #161652;
+    text-decoration: none;
+}
+

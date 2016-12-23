@@ -1,0 +1,23 @@
+{
+    "name": "Librium",
+    "version": "1.0",
+    "manifest_version": 2,
+    "minimum_chrome_version": "20",  // doesn't work in 18, may work in 19
+    "description": "Automatically know if your library carries a book",
+    "homepage_url": "http://librium.herokuapp.com/",
+    "permissions": [
+     "webRequest", "<all_urls>"
+    ],
+    "content_scripts": [
+	{
+	    "matches": ["<all_urls>"],
+	    "exclude_matches": [],
+	    "js": ["script.js"]
+	}
+    ],
+    "web_accessible_resources": ["reset.css", "librium.css", "up.png", "down.png"],
+    "background": {
+	"scripts": ["background.js"]
+	}
+
+}
