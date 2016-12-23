@@ -32,12 +32,57 @@ function doPopup() {
     }
 }
 
+// HTML utils
+
+// borrowed from Prototype
+function unescapeHTML(text) {
+    var div = document.createElement('div');
+    div.innerHTML = text;
+    return div.childNodes[0] ? div.childNodes[0].nodeValue : '';
+}
+
+
+function insertText(container, text) {
+    var node = document.createTextNode(unescapeHTML(text));
+    container.appendChild(node);
+}
+
+function insertLink(container, url title) {
+    var link = document.createElement('a');
+    link.setAttribute('href', url);
+    insertText(link, title);
+    container.appendChild(link);
+    return link;
+}
+
+function addStyleLink(href) {
+    var head, link;
+    head = document.getElementsByTagName('head')[0];
+    if (!head) { head = document.getElementsByTagName('body')[0]; } // headless body found in topless bar
+    if (!head) { return; }
+    link = document.createElement('link');
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
+    link.media = 'all';
+    link.href = href;
+    head.appendChild(link);
+}
+
+function addResult(s) {
+    makeWindow();
+    // TODO this is all very provisional
+    var div = document.createElement('div');    
+    div.setAttribute('class','entry');
+    insertText(div,s);
+    pane.appendChild(div);
+}
+
 function showResults(x) {
-    alert("SFPL has " + x);
+    addResult("SFPL has " + x);
 }
 
 function showNegResults(x) {
-    alert("SFPL doesn't have " + x);
+    addResult("SFPL doesn't have " + x);
 }
 
 
@@ -72,15 +117,15 @@ function  makeWindow() {
     if (pane == null) {
 
 	addStyleLink(chrome.extension.getURL("reset.css"));
-	addStyleLink(chrome.extension.getURL("linkback.css"));
+	addStyleLink(chrome.extension.getURL("librium.css"));
 
 	var body = document.getElementsByTagName('body')[0];
 	var div = document.createElement('div');
-	div.setAttribute('id', 'LinkBack');
-	div.setAttribute('class', 'linkback');
+	div.setAttribute('id', 'Librium');
+	div.setAttribute('class', 'librium');
 
 	pane=document.createElement('div');
-	pane.setAttribute('class','linkbackinner');
+	pane.setAttribute('class','libriuminner');
 	
 	div.appendChild(pane);
 	body.appendChild(div);
@@ -91,7 +136,7 @@ function  makeWindow() {
 
 function insertOpenClose() {
     openclose = document.createElement('div');
-    openclose.setAttribute('class', 'linkbackopener');
+    openclose.setAttribute('class', 'libriumopener');
     opencloseUpdate();
     openclose.addEventListener('click', openCloseHandler, true);
     return openclose;
