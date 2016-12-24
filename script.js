@@ -3,7 +3,12 @@ var openclose;
 var pane;			// contents pane
 var savedResults;
 
-var ISBNRegex = /(97(8|9))?\d{9}(\d|X)/g;
+// ISBN-13s have an entirely different checksum algo so need to be handled separately
+// Also, shoud be smart enough to figure if ISBN13 and ISBN10 refer to same entity 
+// var ISBNRegex = /\b(97(8|9)\-?)?\d{9}(\d|X)\b/g;
+
+// match an ISBN with arbitrary hyphens
+var ISBNRegex = /\b(\d\-?){9}(\d|X)\b/g;
 
 var SFPLTemplate = "https://sfpl.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false";
 
@@ -20,17 +25,45 @@ function includes(s1,s2) {
     return s1.indexOf(s2) >= 0;
 }
 
+// validates a 10-digit ISBN
+function validateISBN(isbn) {
+    var sum = 0
+    for (var i=0;i<9;i++) {
+	sum += parseInt(isbn[i]) * (i + 1)
+    }
+    var check = sum % 11;
+    var checkd = (check == 10) ? "X" : check.toString();
+    return checkd == isbn[9];
+}
+
+function validateISBN(isbn) {
+    var sum = 0
+    var checkpos = isbn.length - 1;
+    var counter = 0;
+    for (var i=0;i<checkpos;i++) {
+	if (isbn[i] != "-") {
+	    sum += parseInt(isbn[i]) * (counter++ + 1);
+	}
+    }
+    var check = sum % 11;
+    var checkd = (check == 10) ? "X" : check.toString();
+    return checkd == isbn[checkpos];
+}
 
 function doPopup() {
     var pageText = document.body.innerText;
-    var match = pageText.match(ISBNRegex);
-    if (match != null) {
-	isbns = unique(match);
-	for (idx in isbns) {
-	    doQuery(match[idx]);
+    // page must contain "ISBN" for any matches
+    if (pageText.match(/ISBN/)) {
+	var match = pageText.match(ISBNRegex);
+	if (match != null) {
+	    isbns = unique(match).filter(validateISBN);
+	    for (idx in isbns) {
+		doQuery(match[idx]);
+	    }
 	}
     }
 }
+       
 
 // HTML utils
 
