@@ -1,3 +1,17 @@
+var libraries =
+    [{name: "SFPL",
+      template: "https://sfpl.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false",
+      test_bad: "Can't Find What You're Looking For"
+      },
+     {name: "SMCL",
+      template: "https://smplibrary.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false",
+      test_bad: "There were no results for your search"
+     },
+     {name: "UCSF",
+      template: "https://ucsfcat.library.ucsf.edu/search~S0/?searchtype=i&searcharg=#{ISBN}",
+      test_bad: "No matches found"
+     }
+    ];
 
 var openclose;
 var pane;			// contents pane
@@ -9,10 +23,6 @@ var savedResults;
 
 // match an ISBN with arbitrary hyphens
 var ISBNRegex = /\b(\d\-?){9}(\d|X)\b/g;
-
-var SFPLTemplate = "https://sfpl.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false";
-
-var SFPLTestBad = "Can't Find What You're Looking For";
 
 // utils
 
@@ -58,7 +68,9 @@ function doPopup() {
 	if (match != null) {
 	    isbns = unique(match).filter(validateISBN);
 	    for (idx in isbns) {
-		doQuery(match[idx]);
+		for (i in libraries) {
+		    doQuery(libraries[i], match[idx]);
+		}
 	    }
 	}
     }
@@ -111,34 +123,34 @@ function makeResultItem() {
 }
 
 
-function showNegResults(x) {
-    insertText(makeResultItem(), "SFPL doesn't have " + x);
+function showNegResults(library, x) {
+    insertText(makeResultItem(), library.name + " doesn't have " + x);
 }
 
 
-function showResults(x) {
+function showResults(library, x) {
     var r = makeResultItem();
     // conceivable this would be a different URL, but most times the query url will also be display url
-    insertLink(r, makeQueryUrl(x), "SFPL has " + x);
+    insertLink(r, makeQueryUrl(library, x), library.name + " has " + x);
 }
 
 
-function makeQueryUrl(isbn) {
-    return SFPLTemplate.replace(/#{ISBN}/, isbn)
+function makeQueryUrl(library, isbn) {
+    return library.template.replace(/#{ISBN}/, isbn);
 }
 
-function doQuery(ISBN) {
+function doQuery(library, ISBN) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", makeQueryUrl(ISBN), true);
+    xhr.open("GET", makeQueryUrl(library, ISBN), true);
     xhr.onreadystatechange = function() {
 	if (xhr.readyState == 4) {
 	    if (xhr.status = 200) {
 		var results = xhr.responseText;
-		if (includes(results, SFPLTestBad)) {
-		    showNegResults(ISBN);
+		if (includes(results, library.test_bad)) {
+		    showNegResults(library, ISBN);
 		}
 		else {
-		    showResults(ISBN);
+		    showResults(library, ISBN);
 		}
 	    }
 	    else {
