@@ -1,0 +1,18 @@
+* What
+
+A Chrome extension that will automatically pop up a window if your library(1) has the book you are looking at(2).
+
+(1) For now, assuming your library is the San Francisco Public Library system. To be generalized when I get around to it.
+(2) Assuming the ISBN number appears on the page (only ISBN-10 for now).
+
+* How 
+
+- Chrome > Preferences > Extensions
+- Turn on Developer Mode
+- Load unpacked extension (point to the this directory)
+- Go to an Amazon book page or similar, you should see a popup in the lower-right corner
+
+* Why
+
+There used to be a nice extension called BookBurrito that did something similar, but it seems to have vanished.
+

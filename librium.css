@@ -1,7 +1,7 @@
 .librium {  
     position: fixed;
     margin:15px;
-    width: 300px;
+    width: 260px;
     right: 0px; 
     bottom: 0px; 
     z-index:1999; 
@@ -56,18 +56,9 @@
     min-height:17px;		/*cuts down flash */
 }
 
-.libriuminner ul {
-    list-style-type: disc; 
-    margin: 0px;		/* shouldn't be necessary but sometimes reset.css doesn't take? */
-    padding: 5px;
-    line-height: normal;
-}
 
-.libriuminner li { 
-    margin-top: 1px; 
-    margin-bottom: 1px; 
-    margin-left: 1px; 
-    color: gray; 
+.libriuminner .entry {
+    margin: 2px;
 }
 
 .libriuminner a {
