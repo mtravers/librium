@@ -1,3 +1,6 @@
+// Turn this on to show negative results
+var showMisses = false;
+
 var libraries =
     [{name: "SFPL",
       template: "https://sfpl.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false",
@@ -147,7 +150,9 @@ function doQuery(library, ISBN) {
 	    if (xhr.status = 200) {
 		var results = xhr.responseText;
 		if (includes(results, library.test_bad)) {
-		    showNegResults(library, ISBN);
+		    if (showMisses) {
+			showNegResults(library, ISBN);
+		    }
 		}
 		else {
 		    showResults(library, ISBN);
