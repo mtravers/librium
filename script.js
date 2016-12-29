@@ -13,6 +13,11 @@ var libraries =
      {name: "UCSF",
       template: "https://ucsfcat.library.ucsf.edu/search~S0/?searchtype=i&searcharg=#{ISBN}",
       test_bad: "No matches found"
+     },
+     // Presumably this will have an entry for almost every valid ISBN...maybe only show as last resort?
+     {name: "Worldcat",
+      template: "https://www.worldcat.org/search?q=bn%3A#{ISBN}",
+      test_bad: "No results match your search"
      }
     ];
 
@@ -98,6 +103,7 @@ function insertText(container, text) {
 function insertLink(container, url, title) {
     var link = document.createElement('a');
     link.setAttribute('href', url);
+    link.setAttribute('target', '_blank');
     insertText(link, title);
     container.appendChild(link);
     return link;
