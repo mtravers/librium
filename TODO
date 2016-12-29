@@ -1,5 +1,6 @@
 - group results either by library or ISBN
 - somehow extract title for display? ISBN is human-unfriendly. Hm, could be done from query page...
+   Done, more or less
 - clean up CSS
 - configuration, with backing site and library like Bookburrito
 - annoying that paperback and hardcover editions are completely different ISBNs, but not sure what I can do about that

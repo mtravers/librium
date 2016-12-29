@@ -4,11 +4,13 @@ var showMisses = false;
 var libraries =
     [{name: "SFPL",
       template: "https://sfpl.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false",
-      test_bad: "Can't Find What You're Looking For"
+      test_bad: "Can't Find What You're Looking For",
+      extractor: /\<span.*bib_link.*\>(.*)\<\/a\>/
       },
      {name: "SMCL",
       template: "https://smplibrary.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false",
-      test_bad: "There were no results for your search"
+      test_bad: "There were no results for your search",
+      extractor: /\<span.*bib_link.*\>(.*)\<\/a\>/
      },
      {name: "UCSF",
       template: "https://ucsfcat.library.ucsf.edu/search~S0/?searchtype=i&searcharg=#{ISBN}",
@@ -17,7 +19,8 @@ var libraries =
      // Presumably this will have an entry for almost every valid ISBN...maybe only show as last resort?
      {name: "Worldcat",
       template: "https://www.worldcat.org/search?q=bn%3A#{ISBN}",
-      test_bad: "No results match your search"
+      test_bad: "No results match your search",
+      extractor: /id=\"result-1\".*<strong>(.*?)( :.*)?<\/strong>/
      }
     ];
 
@@ -25,12 +28,25 @@ var openclose;
 var pane;			// contents pane
 var savedResults;
 
-// ISBN-13s have an entirely different checksum algo so need to be handled separately
-// Also, shoud be smart enough to figure if ISBN13 and ISBN10 refer to same entity 
-// var ISBNRegex = /\b(97(8|9)\-?)?\d{9}(\d|X)\b/g;
+// match an ISBN with arbitrary hyphens (note: this is fairly permissive, downfiltered by following code)
+var ISBNRegex = /\b\d(\d|\-){8,}(\d|X)\b/g;
 
-// match an ISBN with arbitrary hyphens
-var ISBNRegex = /\b(\d\-?){9}(\d|X)\b/g;
+// Should be smart enough to figure if ISBN13 and ISBN10 refer to same entity 
+function findISBNs(s) {
+    var matches = s.match(ISBNRegex);
+    var realMatches = [];
+    for (i in matches) {
+	var trimmed = matches[i].replace(/\-/g,'');
+	if (trimmed.length == 10 && validateISBN10(trimmed)) {
+	    realMatches.push(trimmed);
+	} else if (trimmed.length == 13 && validateISBN13(trimmed)) {
+	    realMatches.push(trimmed);
+	}
+    }
+    console.log("ISBNs found: " + unique(realMatches).toString());
+    return unique(realMatches);
+}
+
 
 // utils
 
@@ -43,8 +59,8 @@ function includes(s1,s2) {
     return s1.indexOf(s2) >= 0;
 }
 
-// validates a 10-digit ISBN
-function validateISBN(isbn) {
+// validates a 10-digit ISBN (with hyphens stripped out)
+function validateISBN10(isbn) {
     var sum = 0
     for (var i=0;i<9;i++) {
 	sum += parseInt(isbn[i]) * (i + 1)
@@ -54,31 +70,20 @@ function validateISBN(isbn) {
     return checkd == isbn[9];
 }
 
-function validateISBN(isbn) {
-    var sum = 0
-    var checkpos = isbn.length - 1;
-    var counter = 0;
-    for (var i=0;i<checkpos;i++) {
-	if (isbn[i] != "-") {
-	    sum += parseInt(isbn[i]) * (counter++ + 1);
-	}
-    }
-    var check = sum % 11;
-    var checkd = (check == 10) ? "X" : check.toString();
-    return checkd == isbn[checkpos];
+function validateISBN13(isbn) {
+    var prefix = isbn.substring(0,3);
+    // TODO validate check digit, but has some funky algorithm
+    return prefix == '978' || prefix == '979';
 }
 
 function doPopup() {
     var pageText = document.body.innerText;
     // page must contain "ISBN" for any matches
     if (pageText.match(/ISBN/)) {
-	var match = pageText.match(ISBNRegex);
-	if (match != null) {
-	    isbns = unique(match).filter(validateISBN);
-	    for (idx in isbns) {
-		for (i in libraries) {
-		    doQuery(libraries[i], match[idx]);
-		}
+	var isbns = findISBNs(pageText);
+	for (idx in isbns) {
+	    for (i in libraries) {
+		doQuery(libraries[i], isbns[idx]);
 	    }
 	}
     }
@@ -133,14 +138,26 @@ function makeResultItem() {
 
 
 function showNegResults(library, x) {
-    insertText(makeResultItem(), library.name + " doesn't have " + x);
+    var msg = library.name + " doesn't have " + x;
+    if (showMisses) {
+	insertText(makeResultItem(), msg);
+    } else {
+	console.log(msg);
+    }
 }
 
 
-function showResults(library, x) {
+function showResults(library, x, results) {
     var r = makeResultItem();
+    var name = x;
+    if (library.extractor) {
+	var match = results.match(library.extractor);
+	if (match) {
+	    name = match[1];
+	}
+    }
     // conceivable this would be a different URL, but most times the query url will also be display url
-    insertLink(r, makeQueryUrl(library, x), library.name + " has " + x);
+    insertLink(r, makeQueryUrl(library, x), library.name + " has " + name);
 }
 
 
@@ -156,12 +173,10 @@ function doQuery(library, ISBN) {
 	    if (xhr.status = 200) {
 		var results = xhr.responseText;
 		if (includes(results, library.test_bad)) {
-		    if (showMisses) {
-			showNegResults(library, ISBN);
-		    }
+		    showNegResults(library, ISBN);
 		}
 		else {
-		    showResults(library, ISBN);
+		    showResults(library, ISBN, results);
 		}
 	    }
 	    else {
