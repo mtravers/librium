@@ -32,25 +32,28 @@ var ISBNRegex = /\b\d(\d|\-){8,}(\d|X)\b/g;
 // Should be smart enough to figure if ISBN13 and ISBN10 refer to same entity 
 function findISBNs(s) {
     var matches = s.match(ISBNRegex);
-    var realMatches = [];
+    var realMatches = {};
     for (i in matches) {
 	var trimmed = matches[i].replace(/\-/g,'');
 	if (trimmed.length == 10 && validateISBN10(trimmed)) {
-	    realMatches.push(trimmed);
+	    var key = trimmed.substring(0,9);
+	    realMatches[key] = trimmed;
 	} else if (trimmed.length == 13 && validateISBN13(trimmed)) {
-	    realMatches.push(trimmed);
+	    var key = trimmed.substring(3,12)
+	    realMatches[key] = trimmed;
 	}
     }
-//    console.log("ISBNs found: " + unique(realMatches).toString());
-    return unique(realMatches);
+    realmatches = values(realMatches);
+    console.log("ISBNs found: " + realMatches.toString());
+    return realMatches;
 }
 
 // utils
 
-function unique(list) {
-    return list.filter(function (x, i, a) { 
-	return a.indexOf(x) == i; 
-    })};
+// amazed this isn't built-in somewhere
+function values(obj) {
+    return Object.keys(obj).map(function (key) {return obj[key];})
+}
 
 function includes(s1,s2) {
     return s1.indexOf(s2) >= 0;
@@ -206,9 +209,9 @@ function  makeWindow() {
     return pane;
 }
 
-if (!typeof(document) == "undefined") {
+if (!(typeof(document) == "undefined")) {
     doPopup();
-}
+ }
 
 function fileISBNs(file) {
     var s = readFile(file);
