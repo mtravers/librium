@@ -2,8 +2,8 @@
 
 A Chrome extension that will automatically pop up a window if your library(1) has the book you are looking at(2).
 
-- (1) For now, assuming your library is the San Francisco public, San Mateo public, or UCSF library. To be further generalized when I get around to it.
-- (2) Assuming the ISBN number appears on the page (only ISBN-10 for now).
+- (1) For now, assuming your library is the San Francisco public, San Mateo public, or UCSF libraries. To be further generalized when I get around to it.
+- (2) Assuming the ISBN number appears on the page.
 
 * How 
 

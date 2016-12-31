@@ -24,9 +24,7 @@ var libraries =
      }
     ];
 
-var openclose;
 var pane;			// contents pane
-var savedResults;
 
 // match an ISBN with arbitrary hyphens (note: this is fairly permissive, downfiltered by following code)
 var ISBNRegex = /\b\d(\d|\-){8,}(\d|X)\b/g;
@@ -43,10 +41,9 @@ function findISBNs(s) {
 	    realMatches.push(trimmed);
 	}
     }
-    console.log("ISBNs found: " + unique(realMatches).toString());
+//    console.log("ISBNs found: " + unique(realMatches).toString());
     return unique(realMatches);
 }
-
 
 // utils
 
@@ -209,15 +206,11 @@ function  makeWindow() {
     return pane;
 }
 
-function insertOpenClose() {
-    openclose = document.createElement('div');
-    openclose.setAttribute('class', 'libriumopener');
-    opencloseUpdate();
-    openclose.addEventListener('click', openCloseHandler, true);
-    return openclose;
+if (!typeof(document) == "undefined") {
+    doPopup();
 }
 
-
-
-doPopup();
-
+function fileISBNs(file) {
+    var s = readFile(file);
+    return findISBNs(s);
+}

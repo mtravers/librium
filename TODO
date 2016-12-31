@@ -1,6 +1,10 @@
+- unify ISBN-10 and -13 items
+- UCSF title extraction
 - group results either by library or ISBN
-- somehow extract title for display? ISBN is human-unfriendly. Hm, could be done from query page...
-   Done, more or less
 - clean up CSS
 - configuration, with backing site and library like Bookburrito
 - annoying that paperback and hardcover editions are completely different ISBNs, but not sure what I can do about that
+- Candidate source: https://books.google.com/books?isbn=0671657135
+- Candidate source: http://bookzz.org/s/?q=0387310738 (no way to do isbn-specific search or validate result, also probably illegal)
+- Candidate source: https://openlibrary.org/search?isbn=0478108354
+- Here's a page with too many hits: https://en.wikipedia.org/wiki/Amanita_muscaria
