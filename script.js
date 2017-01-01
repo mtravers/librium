@@ -14,7 +14,8 @@ var libraries =
      },
      {name: "UCSF",
       template: "https://ucsfcat.library.ucsf.edu/search~S0/?searchtype=i&searcharg=#{ISBN}",
-      test_bad: "No matches found"
+      test_bad: "No matches found",
+      extractor: /class\=\"bibInfoLabel\"\>Title[\s\S]*?<strong>([\s\S]*?)( :.*)?\<\/strong/
      },
      // Presumably this will have an entry for almost every valid ISBN...maybe only show as last resort?
      {name: "Worldcat",
@@ -43,7 +44,7 @@ function findISBNs(s) {
 	    realMatches[key] = trimmed;
 	}
     }
-    realmatches = values(realMatches);
+    realMatches = values(realMatches);
     console.log("ISBNs found: " + realMatches.toString());
     return realMatches;
 }
