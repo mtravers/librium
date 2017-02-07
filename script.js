@@ -1,5 +1,5 @@
 var openclose;
-var homeSiteUrl = "http://linkback.herokuapp.com";
+var homeSiteUrl = "https://github.com/mtravers/librium";
 
 // Turn this on to show negative results
 var showMisses = false;
@@ -27,7 +27,6 @@ var libraries =
       extractor: /id=\"result-1\".*<strong>(.*?)( :.*)?<\/strong>/
      }
     ];
-
 
 // match an ISBN with arbitrary hyphens (note: this is fairly permissive, downfiltered by following code)
 var ISBNRegex = /\b\d(\d|\-){8,}(\d|X)\b/g;
@@ -102,7 +101,6 @@ function unescapeHTML(text) {
     return div.childNodes[0] ? div.childNodes[0].nodeValue : '';
 }
 
-
 function insertText(container, text) {
     var node = document.createTextNode(unescapeHTML(text));
     container.appendChild(node);
@@ -110,7 +108,7 @@ function insertText(container, text) {
 
 function insertOpenClose() {
     openclose = document.createElement('div');
-    openclose.setAttribute('class', 'linkbackopener');
+    openclose.setAttribute('class', 'libriumopener');
     opencloseUpdate();
     openclose.addEventListener('click', openCloseHandler, true);
     return openclose;
@@ -136,7 +134,6 @@ function insertImg(container, imgUrl) {
     container.appendChild(img);
     return img;
 }
-
 
 function opencloseUpdate() {
     openclose.innerHTML = ''
@@ -190,16 +187,16 @@ function showNegResults(library, x) {
     }
 }
 
-var savedResults = [];
+var resultCount = 0;
 
 function showResults(library, x, results) {
-    savedResults = savedResults.concat(results);
+    resultCount += 1;
     updateOpenView(library, x, results)
-    updateClosedView(library, x, results)
+    updateClosedView()
 }
 
-function updateClosedView(library, x, results) {
-    closedPane.innerHTML = savedResults.length + " items found";
+function updateClosedView() {
+    closedPane.innerHTML = resultCount + " items found";
 }
 
 function updateOpenView(library, x, results) {
@@ -263,14 +260,13 @@ function setOpen(nv) {
 
 function openCloseHandler() {
     invertOpen();
+    opencloseUpdate();
     ifOpen(
 	function () {
-	    insertImg(openclose, chrome.extension.getURL("down.png"));
 	    hide(closedPane);
 	    show(openPane);
 	},
 	function () {
-	    insertImg(openclose, chrome.extension.getURL("up.png"));
 	    hide(openPane);
 	    show(closedPane);
 	}
@@ -287,7 +283,7 @@ function show(elt) {
 function insertEndMatter() {
 
     var div = document.createElement('div');
-    div.setAttribute('class','linkbackfooter');
+    div.setAttribute('class','libriumfooter');
     pane.appendChild(div);
 
     insertLink(div, homeSiteUrl, "Librium");
@@ -300,7 +296,6 @@ function insertEndMatter() {
 function  makeWindow() {
     if (pane == null) {
 
-	savedResults = [];
 	addStyleLink(chrome.extension.getURL("reset.css"));
 	addStyleLink(chrome.extension.getURL("librium.css"));
 
@@ -323,6 +318,7 @@ function  makeWindow() {
 	closedPane.setAttribute('class','libriuminner');
 	closedPane.setAttribute('id','closedpane');
 	pane.appendChild(closedPane);
+	hide(closedPane);
 
 	body.appendChild(div);
 
@@ -336,7 +332,4 @@ if (!(typeof(document) == "undefined")) {
     doPopup();
  }
 
-function fileISBNs(file) {
-    var s = readFile(file);
-    return findISBNs(s);
-}
+
