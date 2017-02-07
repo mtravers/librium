@@ -1,3 +1,6 @@
+var openclose;
+var homeSiteUrl = "http://linkback.herokuapp.com";
+
 // Turn this on to show negative results
 var showMisses = false;
 
@@ -25,7 +28,6 @@ var libraries =
      }
     ];
 
-var pane;			// contents pane
 
 // match an ISBN with arbitrary hyphens (note: this is fairly permissive, downfiltered by following code)
 var ISBNRegex = /\b\d(\d|\-){8,}(\d|X)\b/g;
@@ -106,6 +108,42 @@ function insertText(container, text) {
     container.appendChild(node);
 }
 
+function insertOpenClose() {
+    openclose = document.createElement('div');
+    openclose.setAttribute('class', 'linkbackopener');
+    opencloseUpdate();
+    openclose.addEventListener('click', openCloseHandler, true);
+    return openclose;
+}
+
+function insertImgLink(container, imgUrl, linkUrl) {
+    var link = document.createElement('a');	
+    if (linkUrl) link.setAttribute('href', linkUrl);
+    var img = document.createElement('img');
+    img.setAttribute('src', imgUrl);
+    img.setAttribute('border', '0');
+    img.setAttribute('style', 'vertical-align: middle');
+    link.appendChild(img);
+    container.appendChild(link);
+    return link;
+}
+
+function insertImg(container, imgUrl) {
+    var img = document.createElement('img');
+    img.setAttribute('src', imgUrl);
+    img.setAttribute('border', '0');
+    img.setAttribute('style', 'vertical-align: middle');
+    container.appendChild(img);
+    return img;
+}
+
+
+function opencloseUpdate() {
+    openclose.innerHTML = ''
+    ifOpen(function () { insertImg(openclose, chrome.extension.getURL("down.png")); },
+	   function () { insertImg(openclose, chrome.extension.getURL("up.png")); });
+}
+
 function insertLink(container, url, title) {
     var link = document.createElement('a');
     link.setAttribute('href', url);
@@ -128,12 +166,17 @@ function addStyleLink(href) {
     head.appendChild(link);
 }
 
+// contents views
+var pane;
+var openPane;
+var closedPane;
+
 function makeResultItem() {
     makeWindow();
     // TODO this is all very provisional
     var div = document.createElement('div');    
     div.setAttribute('class','entry');
-    pane.appendChild(div);
+    openPane.appendChild(div);
     return div;
 }
 
@@ -147,8 +190,19 @@ function showNegResults(library, x) {
     }
 }
 
+var savedResults = [];
 
 function showResults(library, x, results) {
+    savedResults = savedResults.concat(results);
+    updateOpenView(library, x, results)
+    updateClosedView(library, x, results)
+}
+
+function updateClosedView(library, x, results) {
+    closedPane.innerHTML = savedResults.length + " items found";
+}
+
+function updateOpenView(library, x, results) {
     var r = makeResultItem();
     var name = x;
     if (library.extractor) {
@@ -188,10 +242,65 @@ function doQuery(library, ISBN) {
     xhr.send();
 }
 
+function ifOpen(yes, no) {
+    chrome.extension.sendMessage({cmd:"isOpen"}, function(response) {
+	if (response) 
+	    yes.call();
+	else
+	    no.call();
+    });
+}
+
+function invertOpen() {
+    chrome.extension.sendMessage({cmd:"switchOpen"}, function(response) {
+    });
+}
+
+function setOpen(nv) {
+    chrome.extension.sendMessage({cmd:"setOpen",value: nv}, function(response) {
+    });
+}
+
+function openCloseHandler() {
+    invertOpen();
+    ifOpen(
+	function () {
+	    insertImg(openclose, chrome.extension.getURL("down.png"));
+	    hide(closedPane);
+	    show(openPane);
+	},
+	function () {
+	    insertImg(openclose, chrome.extension.getURL("up.png"));
+	    hide(openPane);
+	    show(closedPane);
+	}
+    );
+}
+
+function hide(elt) {
+    elt.style.display = "none";
+}
+function show(elt) {
+    elt.style.display = "block";
+}
+
+function insertEndMatter() {
+
+    var div = document.createElement('div');
+    div.setAttribute('class','linkbackfooter');
+    pane.appendChild(div);
+
+    insertLink(div, homeSiteUrl, "Librium");
+    insertText(div, ' ');
+
+    div.appendChild(insertOpenClose());
+
+}
 
 function  makeWindow() {
     if (pane == null) {
 
+	savedResults = [];
 	addStyleLink(chrome.extension.getURL("reset.css"));
 	addStyleLink(chrome.extension.getURL("librium.css"));
 
@@ -200,11 +309,24 @@ function  makeWindow() {
 	div.setAttribute('id', 'Librium');
 	div.setAttribute('class', 'librium');
 
-	pane=document.createElement('div');
+	pane = document.createElement('div');
 	pane.setAttribute('class','libriuminner');
 	
 	div.appendChild(pane);
+
+	openPane = document.createElement('div');
+	openPane.setAttribute('class','libriuminner');
+	openPane.setAttribute('id','openpane');
+	pane.appendChild(openPane);
+
+	closedPane = document.createElement('div');
+	closedPane.setAttribute('class','libriuminner');
+	closedPane.setAttribute('id','closedpane');
+	pane.appendChild(closedPane);
+
 	body.appendChild(div);
+
+	insertEndMatter();
 
     }
     return pane;
