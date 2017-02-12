@@ -25,6 +25,19 @@ var libraries =
       template: "https://www.worldcat.org/search?q=bn%3A#{ISBN}",
       test_bad: "No results match your search",
       extractor: /id=\"result-1\".*<strong>(.*?)( :.*)?<\/strong>/
+     },
+     {name: "Internet Archive",
+      template: "https://archive.org/services/book/v1/do_we_want_it/?isbn=#{ISBN}&debug=true",
+      test_bad: "we need to scan this book",
+// not adequate
+      extractor: /\"ia_identifier\":(.*?),/
+     },
+     {name: "Open Library",
+      // adding jscmd=data will return title
+      template: "https://openlibrary.org/api/books?bibkeys=ISBN:#{ISBN}&format=json",
+      test_bad: "{}",		// sucky
+// not adequate
+      extractor: /\"info_url\":(.*?),/
      }
     ];
 
