@@ -8,23 +8,28 @@ var libraries =
     [{name: "SFPL",
       template: "https://sfpl.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false",
       test_bad: "Can't Find What You're Looking For",
-      extractor: /\<span.*bib_link.*\>(.*)\<\/a\>/
+      title_extractor: /\<span.*bib_link.*\>(.*)\<\/a\>/
       },
      {name: "SMCL",
       template: "https://smplibrary.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false",
       test_bad: "There were no results for your search",
-      extractor: /\<span.*bib_link.*\>(.*)\<\/a\>/
+      title_extractor: /\<span.*bib_link.*\>(.*)\<\/a\>/
      },
      {name: "UCSF",
       template: "https://ucsfcat.library.ucsf.edu/search~S0/?searchtype=i&searcharg=#{ISBN}",
       test_bad: "No matches found",
-      extractor: /class\=\"bibInfoLabel\"\>Title[\s\S]*?<strong>([\s\S]*?)( :.*)?\<\/strong/
+      title_extractor: /class\=\"bibInfoLabel\"\>Title[\s\S]*?<strong>([\s\S]*?)( :.*)?\<\/strong/
+     },
+     {name: "Link+",
+      template: "https://csul.iii.com/search/?searchtype=i&SORT=D&searcharg=#{ISBN}",
+      test_bad: "No matches found",
+      title_extractor: /<strong>(.*) \/ .*<\/strong>/
      },
      // Presumably this will have an entry for almost every valid ISBN...maybe only show as last resort?
      {name: "Worldcat",
       template: "https://www.worldcat.org/search?q=bn%3A#{ISBN}",
       test_bad: "No results match your search",
-      extractor: /id=\"result-1\".*<strong>(.*?)( :.*)?<\/strong>/
+      title_extractor: /id=\"result-1\".*<strong>(.*?)( :.*)?<\/strong>/
      }
     ];
 
@@ -202,8 +207,8 @@ function updateClosedView() {
 function updateOpenView(library, x, results) {
     var r = makeResultItem();
     var name = x;
-    if (library.extractor) {
-	var match = results.match(library.extractor);
+    if (library.title_extractor) {
+	var match = results.match(library.title_extractor);
 	if (match) {
 	    name = match[1];
 	}
