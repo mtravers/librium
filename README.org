@@ -16,3 +16,6 @@ A Chrome extension that will automatically pop up a window if your library(1) ha
 
 There used to be a nice extension called BookBurrito that did something similar, but it seems to have vanished.
 
+* Notes
+
+The Privacy Badger extension can interfere with operation extension, but you can go set the appropriate domains to allowed (green) in its control window.

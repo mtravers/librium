@@ -221,7 +221,7 @@ function doQuery(library, ISBN) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", makeQueryUrl(library, ISBN), true);
     xhr.onreadystatechange = function() {
-	if (xhr.readyState == 4) {
+	if (xhr.readyState == XMLHttpRequest.DONE) {
 	    if (xhr.status = 200) {
 		var results = xhr.responseText;
 		if (includes(results, library.test_bad)) {
