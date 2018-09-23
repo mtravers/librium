@@ -55,10 +55,50 @@ function findISBNs(s) {
     return realMatches;
 }
 
+// DOI/SciHub (TODO if any more things added, make this properly data-driven)
+// Note: unlike the ISBN/libraries, this does not ping a server to see if the resource exists.
+// SciHub doesn't have an API or other way to easily do this, AFAICT.
+
+var sciHubBase = "http://sci-hub.tw/"; // This changes frequently
+
+// From https://github.com/zaytoun/scihub.py/blob/master/scihub/scihub.py
+// Not used yet.
+var sciHubHosts =  ['sci-hub.hk',
+                    'sci-hub.tw',
+                    'sci-hub.la',
+                    'sci-hub.mn',
+                    'sci-hub.name',
+                    'sci-hub.is',
+                    'sci-hub.tv',
+                    'sci-hub.ws',
+                    'www.sci-hub.cn',
+                    'sci-hub.sci-hub.hk',
+                    'sci-hub.sci-hub.tw',
+                    'sci-hub.sci-hub.mn',
+                    'sci-hub.sci-hub.tv',
+                    'tree.sci-hub.la'];
+
+
+var DOIRegex = /\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)/;
+
+const unique = (value, index, self) => {
+    return self.indexOf(value) === index;
+}
+
+function findDOIs(s) {
+    return s.match(DOIRegex).filter(unique);
+}
+
+function makeSciHubUrl(doi) {
+    return sciHubBase + doi;
+}
+
+
 // utils
 
 // amazed this isn't built-in somewhere
 function values(obj) {
+
     return Object.keys(obj).map(function (key) {return obj[key];})
 }
 
@@ -83,6 +123,7 @@ function validateISBN13(isbn) {
     return prefix == '978' || prefix == '979';
 }
 
+
 function doPopup() {
     var pageText = document.body.innerText;
     // page must contain "ISBN" for any matches
@@ -94,6 +135,11 @@ function doPopup() {
 	    }
 	}
     }
+    var dois = findDOIs(pageText);
+	for (idx in dois) {
+	    var doi = dois[idx];
+	    insertLink(makeResultItem(), makeSciHubUrl(doi), "SciHub " + doi);
+	}
 }
        
 
@@ -204,9 +250,7 @@ function updateClosedView() {
     closedPane.innerHTML = resultCount + " items found";
 }
 
-function updateOpenView(library, x, results) {
-    var r = makeResultItem();
-    var name = x;
+function updateOpenView(library, name, results) {
     if (library.title_extractor) {
 	var match = results.match(library.title_extractor);
 	if (match) {
@@ -214,7 +258,7 @@ function updateOpenView(library, x, results) {
 	}
     }
     // conceivable this would be a different URL, but most times the query url will also be display url
-    insertLink(r, makeQueryUrl(library, x), library.name + " has " + name);
+    insertLink(makeResultItem(), makeQueryUrl(library, x), library.name + " has " + name);
 }
 
 
