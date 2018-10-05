@@ -79,14 +79,18 @@ var sciHubHosts =  ['sci-hub.hk',
                     'tree.sci-hub.la'];
 
 
-var DOIRegex = /\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)/;
+var DOIRegex = /\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)/g;
 
 const unique = (value, index, self) => {
     return self.indexOf(value) === index;
 }
 
 function findDOIs(s) {
-    return s.match(DOIRegex).filter(unique);
+    var matches = s.match(DOIRegex)
+    if (matches == null)
+	return [];
+    else 
+	return matches.filter(unique);
 }
 
 function makeSciHubUrl(doi) {
@@ -136,10 +140,10 @@ function doPopup() {
 	}
     }
     var dois = findDOIs(pageText);
-	for (idx in dois) {
-	    var doi = dois[idx];
-	    insertLink(makeResultItem(), makeSciHubUrl(doi), "SciHub " + doi);
-	}
+    for (idx in dois) {
+	var doi = dois[idx];
+	insertLink(makeResultItem(), makeSciHubUrl(doi), "SciHub " + doi);
+    }
 }
        
 
@@ -240,9 +244,9 @@ function showNegResults(library, x) {
 
 var resultCount = 0;
 
-function showResults(library, x, results) {
+function showResults(library, isbn, results) {
     resultCount += 1;
-    updateOpenView(library, x, results)
+    updateOpenView(library, isbn, results)
     updateClosedView()
 }
 
@@ -250,7 +254,8 @@ function updateClosedView() {
     closedPane.innerHTML = resultCount + " items found";
 }
 
-function updateOpenView(library, name, results) {
+function updateOpenView(library, isbn, results) {
+    var name = isbn;
     if (library.title_extractor) {
 	var match = results.match(library.title_extractor);
 	if (match) {
@@ -258,7 +263,7 @@ function updateOpenView(library, name, results) {
 	}
     }
     // conceivable this would be a different URL, but most times the query url will also be display url
-    insertLink(makeResultItem(), makeQueryUrl(library, x), library.name + " has " + name);
+    insertLink(makeResultItem(), makeQueryUrl(library, isbn), library.name + " has " + name);
 }
 
 
