@@ -78,8 +78,7 @@ var sciHubHosts =  ['sci-hub.hk',
                     'sci-hub.sci-hub.tv',
                     'tree.sci-hub.la'];
 
-
-var DOIRegex = /\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)/g;
+var DOIRegex = /\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>\[\]])\S)+)/g;
 
 const unique = (value, index, self) => {
     return self.indexOf(value) === index;
