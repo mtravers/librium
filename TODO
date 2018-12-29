@@ -1,8 +1,16 @@
+BAD BUGS:
+- opener inconsistent behavior
+
+- Tried to sign up for developer API access here http://developer.bibliocommons.com/
+  but it never delivered the confirming email...
+
 - group results either by library or ISBN
 - clean up CSS
 - configuration, with backing site and library like Bookburrito
 - annoying that paperback and hardcover editions are completely different ISBNs, but not sure what I can do about that
 - Candidate source: https://books.google.com/books?isbn=0671657135
 - Candidate source: http://bookzz.org/s/?q=0387310738 (no way to do isbn-specific search or validate result, also probably illegal)
+      Works now!  ISBN search eg http://bookos-z1.org/s/?q=9780674175532&yearFrom=&yearTo=&language=&extension=&t=0
+
 - Candidate source: https://openlibrary.org/search?isbn=0478108354
 - Here's a page with too many hits: https://en.wikipedia.org/wiki/Amanita_muscaria

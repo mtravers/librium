@@ -7,28 +7,28 @@ var showMisses = false;
 var libraries =
     [{name: "SFPL",
       template: "https://sfpl.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false",
-      test_bad: "Can't Find What You're Looking For",
-      title_extractor: /\<span.*bib_link.*\>(.*)\<\/a\>/
+      test_bad: /\<h4.*Nothing found for.*?identifier.*?\<\/h4\>/,
+      title_extractor: /class="title-content".*?\>(.*?)\<\/span\>/
       },
      {name: "SMCL",
       template: "https://smplibrary.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false",
-      test_bad: "There were no results for your search",
-      title_extractor: /\<span.*bib_link.*\>(.*)\<\/a\>/
+      test_bad: /\<h4.*Nothing found for.*?identifier.*?\<\/h4\>/,
+      title_extractor: /class="title-content".*?\>(.*?)\<\/span\>/
      },
      {name: "UCSF",
-      template: "https://ucsfcat.library.ucsf.edu/search~S0/?searchtype=i&searcharg=#{ISBN}",
-      test_bad: "No matches found",
+      template: "http://ucsfcat.library.ucsf.edu/search~S0/?searchtype=i&searcharg=#{ISBN}",
+      test_bad: /No matches found/,
       title_extractor: /class\=\"bibInfoLabel\"\>Title[\s\S]*?<strong>([\s\S]*?)( :.*)?\<\/strong/
      },
      {name: "Link+",
-      template: "https://csul.iii.com/search/?searchtype=i&SORT=D&searcharg=#{ISBN}",
-      test_bad: "No matches found",
+      template: "http://csul.iii.com/search/?searchtype=i&SORT=D&searcharg=#{ISBN}",
+      test_bad: /No matches found/,
       title_extractor: /<strong>(.*) \/ .*<\/strong>/
      },
      // Presumably this will have an entry for almost every valid ISBN...maybe only show as last resort?
      {name: "Worldcat",
       template: "https://www.worldcat.org/search?q=bn%3A#{ISBN}",
-      test_bad: "No results match your search",
+      test_bad: /No results match your search/,
       title_extractor: /id=\"result-1\".*<strong>(.*?)( :.*)?<\/strong>/
      }
     ];
@@ -103,10 +103,6 @@ function makeSciHubUrl(doi) {
 function values(obj) {
 
     return Object.keys(obj).map(function (key) {return obj[key];})
-}
-
-function includes(s1,s2) {
-    return s1.indexOf(s2) >= 0;
 }
 
 // validates a 10-digit ISBN (with hyphens stripped out)
@@ -277,7 +273,7 @@ function doQuery(library, ISBN) {
 	if (xhr.readyState == XMLHttpRequest.DONE) {
 	    if (xhr.status = 200) {
 		var results = xhr.responseText;
-		if (includes(results, library.test_bad)) {
+		if (results.match(library.test_bad)) {
 		    showNegResults(library, ISBN);
 		}
 		else {

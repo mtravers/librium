@@ -1,6 +1,10 @@
 * What
 
-A Chrome extension that will automatically pop up a window if your library(1) has the book you are looking at(2).
+A Chrome extension that will automatically pop up a window with links to free versions of the thing you are looking at.
+
+Currently this means:
+- if your library(1) has the book you are looking at(2), provide a link
+- if there՚s a DOI on the page, provide a SciHub link.
 
 - (1) For now, assuming your library is the San Francisco public, San Mateo public, or UCSF libraries. To be further generalized when I get around to it.
 - (2) Assuming the ISBN number appears on the page.
@@ -11,6 +15,7 @@ A Chrome extension that will automatically pop up a window if your library(1) ha
 - Turn on Developer Mode
 - Load unpacked extension (point to the this directory)
 - Go to an Amazon book page or similar, you should see a popup in the lower-right corner
+- Note: if you run any privacy extensions (eg Privacy Badger from EFF) you may need to customize them or turn them off. 
 
 * Why
 
