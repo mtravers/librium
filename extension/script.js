@@ -31,6 +31,11 @@ var libraries =
       template: "https://www.worldcat.org/search?q=bn%3A#{ISBN}",
       test_bad: /No results match your search/,
       title_extractor: /id=\"result-1\".*<strong>(.*?)( :.*)?<\/strong>/
+     },
+     {name: "Bookos",
+      template: "https://bookos-z1.org/s/?q=#{ISBN}",
+      test_bad: /On your request nothing has been found/,
+      title_extractor: /class\=\"tdn\"\>(.*?)\<\/a\>/
      }
     ];
 
