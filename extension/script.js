@@ -16,14 +16,15 @@ var libraries =
       title_extractor: /class="title-content".*?\>(.*?)\<\/span\>/
      },
      {name: "UCSF",
-      template: "http://ucsfcat.library.ucsf.edu/search~S0/?searchtype=i&searcharg=#{ISBN}",
+      template: "https://ucsfcat.library.ucsf.edu/search~S0/?searchtype=i&searcharg=#{ISBN}",
       test_bad: /No matches found/,
       title_extractor: /class\=\"bibInfoLabel\"\>Title[\s\S]*?<strong>([\s\S]*?)( :.*)?\<\/strong/
      },
      {name: "Link+",
-      template: "http://csul.iii.com/search/?searchtype=i&SORT=D&searcharg=#{ISBN}",
+      template: "https://csul.iii.com/search/?searchtype=i&SORT=D&searcharg=#{ISBN}",
       test_bad: /No matches found/,
-      title_extractor: /<strong>(.*) \/ .*<\/strong>/
+      // hideous
+      title_extractor: /\<h2.*?class\=\"briefcitTitle\"\>[\s\S]*?\>(.*?)\</
      },
      // Presumably this will have an entry for almost every valid ISBN...maybe only show as last resort?
      {name: "Worldcat",
