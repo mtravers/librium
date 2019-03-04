@@ -1,4 +1,4 @@
-var openclose;
+var openclose;			// the opener DOM object
 var homeSiteUrl = "https://github.com/mtravers/librium";
 
 // Turn this on to show negative results
@@ -193,8 +193,17 @@ function insertImg(container, imgUrl) {
 
 function opencloseUpdate() {
     openclose.innerHTML = ''
-    ifOpen(function () { insertImg(openclose, chrome.extension.getURL("down.png")); },
-	   function () { insertImg(openclose, chrome.extension.getURL("up.png")); });
+    ifOpen(
+	function () {
+	    insertImg(openclose, chrome.extension.getURL("down.png"));
+	    hide(closedPane);
+	    show(openPane);
+	},
+	function () {
+	    insertImg(openclose, chrome.extension.getURL("up.png"));
+	    hide(openPane);
+	    show(closedPane);
+	});
 }
 
 function insertLink(container, url, title) {
@@ -296,10 +305,12 @@ function doQuery(library, ISBN) {
 
 function ifOpen(yes, no) {
     chrome.extension.sendMessage({cmd:"isOpen"}, function(response) {
-	if (response) 
+	if (response) {
 	    yes.call();
-	else
+	}
+	else {
 	    no.call();
+	}
     });
 }
 
@@ -308,6 +319,7 @@ function invertOpen() {
     });
 }
 
+// unused
 function setOpen(nv) {
     chrome.extension.sendMessage({cmd:"setOpen",value: nv}, function(response) {
     });
@@ -316,16 +328,6 @@ function setOpen(nv) {
 function openCloseHandler() {
     invertOpen();
     opencloseUpdate();
-    ifOpen(
-	function () {
-	    hide(closedPane);
-	    show(openPane);
-	},
-	function () {
-	    hide(openPane);
-	    show(closedPane);
-	}
-    );
 }
 
 function hide(elt) {
@@ -386,5 +388,6 @@ function  makeWindow() {
 if (!(typeof(document) == "undefined")) {
     doPopup();
  }
+
 
 

@@ -6,9 +6,6 @@ function isOpen() {
 // good christ chrome makes you jump through hopes to store 1 bit
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
-	console.log(sender.tab ?
-                    "from a content script:" + sender.tab.url :
-                    "from the extension");
 	if (request.cmd == "isOpen")
 	    sendResponse(isOpen());
 	else if (request.cmd == "setOpen") {
