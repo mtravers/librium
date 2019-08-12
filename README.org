@@ -23,4 +23,13 @@ There used to be a nice extension called BookBurrito that did something similar,
 
 * Notes
 
-The Privacy Badger extension can interfere with operation extension, but you can go set the appropriate domains to allowed (green) in its control window.
+The Privacy Badger extension can interfere with the operation of the extension, but you can go set the appropriate domains to allowed (green) in its control window.
+
+* Testing
+
+The source pages change their HTML layout fairly frequently, and this uses pretty naive regexs to try and detect results. Therefore, the configs need to change fairly often. Forunately there is a test jig:
+
+#+BEGIN_SRC
+cd test
+./test.sh
+#+END_SRC    

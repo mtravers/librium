@@ -1,3 +1,20 @@
+Lots of sites no longer working due to mixed-content (HTTP/HTTPS)
+
+Oh: NOTHING is working due to this new change:
+https://www.chromium.org/Home/chromium-security/extension-content-script-fetches
+
+Well, tried to move stuff to background but still doesn't work
+- response doesn't seem to get transferred to main script
+- response is still of type "cors" so can't be read
+
+I give up, Library Extension is better (but only works on a few sites)
+
+Still useful for DOI I guess.
+
+
+https://pearsonnacommunity.force.com/support/s/article/How-to-display-mixed-content-with-Google-Chrome-Internet-Explorer-or-Firefox-1408394589290
+https://developers.google.com/web/updates/2015/03/introduction-to-fetch
+
 BAD BUGS:
 
 - Will manifest on printed output (Eg from journal). Is there a way to turn it off?
@@ -7,9 +24,9 @@ BAD BUGS:
 - deal with multiple ISBNs on page? Sometimes 10 and 13 are actually different and both should be searched.
 (Perhaps combine this with "group results" and general overhaul to deal with large return sets)
 
-- opener inconsistent behavior
-
 RANDOM IDEAS:
+
+- how about adding Powell's as a book source (because fuck Amazon)? Their search responds to ISBNs
 
 - Tried to sign up for developer API access here http://developer.bibliocommons.com/
   but it never delivered the confirming email...

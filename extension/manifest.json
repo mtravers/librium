@@ -6,7 +6,7 @@
     "description": "Automatically know if your library carries a book",
     "homepage_url": "http://librium.herokuapp.com/",
     "permissions": [
-     "webRequest", "<all_urls>"
+	"https://*/"
     ],
     "content_scripts": [
 	{

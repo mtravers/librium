@@ -4,6 +4,8 @@ var homeSiteUrl = "https://github.com/mtravers/librium";
 // Turn this on to show negative results
 var showMisses = false;
 
+// TODO separate file at least
+// Note: these should all be https: urls, in combo with extension like SSH Everywhere will avoid mixed-content blocks.
 var libraries =
     [{name: "SFPL",
       template: "https://sfpl.bibliocommons.com/search?custom_query=identifier%3A(#{ISBN})&suppress=true&custom_edit=false",
@@ -32,6 +34,7 @@ var libraries =
       test_bad: /No results match your search/,
       title_extractor: /id=\"result-1\".*<strong>(.*?)( :.*)?<\/strong>/
      },
+     // Doesn't work in tests, presumably requires specific client id or something
      {name: "Bookos",
       template: "https://bookos-z1.org/s/?q=#{ISBN}",
       test_bad: /On your request nothing has been found/,
@@ -282,26 +285,52 @@ function makeQueryUrl(library, isbn) {
 }
 
 function doQuery(library, ISBN) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", makeQueryUrl(library, ISBN), true);
-    xhr.onreadystatechange = function() {
-	if (xhr.readyState == XMLHttpRequest.DONE) {
-	    if (xhr.status = 200) {
-		var results = xhr.responseText;
-		if (results.match(library.test_bad)) {
-		    showNegResults(library, ISBN);
-		}
-		else {
-		    showResults(library, ISBN, results);
-		}
-	    }
-	    else {
-		insertError(xhr.status, xhr.statusText);
-	    }
-	}
-    };
-    xhr.send();
+    chrome.extension.sendMessage({cmd:"crossScript", url: makeQueryUrl(library, ISBN)},
+				 function(response) {
+				     if (response.status == 200) {
+					 var results = response.text();
+					 if (results.length == 0) {
+					     console.log(library.name + ": empty");
+					 } else if (results.match(library.test_bad)) {
+					     showNegResults(library, ISBN);
+					 }
+					 else {
+					     showResults(library, ISBN, results);
+					 }
+				     }
+				     else {
+					 insertError(response.status());
+				     }
+				 }
+				);
 }
+				
+
+// function doQuery(library, ISBN) {
+//     var xhr = new XMLHttpRequest();
+//     xhr.open("GET", makeQueryUrl(library, ISBN), true);
+//     xhr.withCredentials = true;
+//     xhr.onreadystatechange = function() {
+// 	if (xhr.readyState == XMLHttpRequest.DONE) {
+// 	    if (xhr.status = 200) {
+// 		var results = xhr.responseText;
+// 		if (results.length == 0) {
+// 		    console.log(library.name + ": empty");
+// 		} else
+// 		if (results.match(library.test_bad)) {
+// 		    showNegResults(library, ISBN);
+// 		}
+// 		else {
+// 		    showResults(library, ISBN, results);
+// 		}
+// 	    }
+// 	    else {
+// 		insertError(xhr.status, xhr.statusText);
+// 	    }
+// 	}
+//     };
+//     xhr.send();
+// }
 
 function ifOpen(yes, no) {
     chrome.extension.sendMessage({cmd:"isOpen"}, function(response) {

@@ -16,5 +16,14 @@ chrome.extension.onMessage.addListener(
 	    var nv = !(isOpen());
 	    localStorage.setItem('librium_open', nv);
 	    sendResponse(nv);
+	} else if (request.cmd == "crossScript") {
+	    var url = request.url;
+	    console.log("pkm: " + url);
+	    fetch(url)
+		.then(function(response) {
+		    sendResponse(response.text())
+		});
+		      
 	}
     });
+
