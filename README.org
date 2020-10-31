@@ -3,8 +3,8 @@
 A Chrome extension that will automatically pop up a window with links to free versions of the thing you are looking at.
 
 Currently this means:
-- if your library(1) has the book you are looking at(2), provide a link
 - if there՚s a DOI on the page, provide a SciHub link.
+- if your library(1) has the book you are looking at(2), provide a link
 
 - (1) For now, assuming your library is the San Francisco public, San Mateo public, or UCSF libraries. To be further generalized when I get around to it.
 - (2) Assuming the ISBN number appears on the page.
@@ -27,9 +27,11 @@ The Privacy Badger extension can interfere with the operation of the extension, 
 
 * Testing
 
-The source pages change their HTML layout fairly frequently, and this uses pretty naive regexs to try and detect results. Therefore, the configs need to change fairly often. Forunately there is a test jig:
+The source pages change their HTML layout fairly frequently, and this uses pretty naive regexs to try and detect results. Therefore, the configs need to change fairly often. Forunately there is a test jig.
 
 #+BEGIN_SRC
 cd test
 ./test.sh
 #+END_SRC    
+
+This requires =rhino=. 

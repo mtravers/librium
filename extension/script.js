@@ -68,12 +68,13 @@ function findISBNs(s) {
 // Note: unlike the ISBN/libraries, this does not ping a server to see if the resource exists.
 // SciHub doesn't have an API or other way to easily do this, AFAICT.
 
-var sciHubBase = "http://sci-hub.tw/"; // This changes frequently
+var sciHubBase = "http://sci-hub.st/"; // This changes frequently
 
 // From https://github.com/zaytoun/scihub.py/blob/master/scihub/scihub.py
-// Not used yet.
-var sciHubHosts =  ['sci-hub.hk',
-                    'sci-hub.tw',
+// Not used yet. Maybe automated search through these to find the current host.
+var sciHubHosts =  ['sci-hub.st',
+		    'sci-hub.tw',
+		    'sci-hub.hk',
                     'sci-hub.la',
                     'sci-hub.mn',
                     'sci-hub.name',
@@ -285,24 +286,24 @@ function makeQueryUrl(library, isbn) {
 }
 
 function doQuery(library, ISBN) {
-    chrome.extension.sendMessage({cmd:"crossScript", url: makeQueryUrl(library, ISBN)},
-				 function(response) {
-				     if (response.status == 200) {
-					 var results = response.text();
-					 if (results.length == 0) {
-					     console.log(library.name + ": empty");
-					 } else if (results.match(library.test_bad)) {
-					     showNegResults(library, ISBN);
-					 }
-					 else {
-					     showResults(library, ISBN, results);
-					 }
-				     }
-				     else {
-					 insertError(response.status());
-				     }
-				 }
-				);
+    chrome.runtime.sendMessage({cmd:"crossScript", url: makeQueryUrl(library, ISBN)},
+			       function(response) {
+				   if (response.status == 200) {
+				       var results = response.text();
+				       if (results.length == 0) {
+					   console.log(library.name + ": empty");
+				       } else if (results.match(library.test_bad)) {
+					   showNegResults(library, ISBN);
+				       }
+				       else {
+					   showResults(library, ISBN, results);
+				       }
+				   }
+				   else {
+				       insertError(response.status());
+				   }
+			       }
+			      );
 }
 				
 
@@ -333,7 +334,7 @@ function doQuery(library, ISBN) {
 // }
 
 function ifOpen(yes, no) {
-    chrome.extension.sendMessage({cmd:"isOpen"}, function(response) {
+    chrome.runtime.sendMessage({cmd:"isOpen"}, function(response) {
 	if (response) {
 	    yes.call();
 	}
@@ -344,13 +345,13 @@ function ifOpen(yes, no) {
 }
 
 function invertOpen() {
-    chrome.extension.sendMessage({cmd:"switchOpen"}, function(response) {
+    chrome.runtime.sendMessage({cmd:"switchOpen"}, function(response) {
     });
 }
 
 // unused
 function setOpen(nv) {
-    chrome.extension.sendMessage({cmd:"setOpen",value: nv}, function(response) {
+    chrome.runtime.sendMessage({cmd:"setOpen",value: nv}, function(response) {
     });
 }
 

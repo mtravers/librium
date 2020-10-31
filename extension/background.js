@@ -4,8 +4,9 @@ function isOpen() {
 }
 
 // good christ chrome makes you jump through hopes to store 1 bit
-chrome.extension.onMessage.addListener(
+chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
+	console.log("hatemylife" + request.cmd)
 	if (request.cmd == "isOpen")
 	    sendResponse(isOpen());
 	else if (request.cmd == "setOpen") {
